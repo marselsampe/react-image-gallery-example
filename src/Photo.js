@@ -53,7 +53,7 @@ class Photo extends React.Component {
                     subtitle={photo.title}
                     titleStyle={{ textAlign: 'left' }}
                     subtitleStyle={{ textAlign: 'left' }}>
-                    {(loadedImage ? <img src={photo.url} /> : <CircularProgress style={{ margin: '35%' }} />)}
+                    {(loadedImage ? <img src={loadedImage} /> : <CircularProgress style={{ margin: '35%' }} />)}
                 </GridTile>
             </Paper>
         );
