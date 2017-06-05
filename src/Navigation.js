@@ -32,8 +32,8 @@ class Navigation extends React.Component {
         this.setState({ listAlbum: result });
     }
 
-    loadListAlbumError(result) {
-        alert('error : ' + JSON.stringify(result));
+    loadListAlbumError(message) {
+        alert('error : ' + message);
     }
 
     handleSelectAlbum(albumId) {

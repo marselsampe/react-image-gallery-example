@@ -1,5 +1,3 @@
-import jquery from 'jquery';
-
 function ServiceClientManager() {
     var baseAPI = 'https://jsonplaceholder.typicode.com/';
 
@@ -10,17 +8,16 @@ function ServiceClientManager() {
     }
 
     function callService(serviceUrl, successCallback, errorCallback) {
-        var promise = jquery.ajax(serviceUrl)
-            .done(OnSuccess)
-            .fail(OnError);
-
-        function OnSuccess(result) {
-            return successCallback(result);
-        }
-
-        function OnError(result) {
-            return errorCallback(result);
-        }
+        var promise = fetch(serviceUrl)
+            .then(function (response) {
+                return response.json();
+            })
+            .then(function (json) {
+                successCallback(json);
+            })
+            .catch(function (error) {
+                errorCallback(error);
+            });
 
         return promise;
     }

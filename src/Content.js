@@ -33,8 +33,8 @@ class Content extends React.Component {
         this.setState({ listPhoto: result });
     }
 
-    loadListPhotoError(result) {
-        alert('error : ' + JSON.stringify(result));
+    loadListPhotoError(message) {
+        alert('error : ' + message);
     }
 
     createListPhotoGrid(listPhoto) {
