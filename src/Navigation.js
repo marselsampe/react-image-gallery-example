@@ -1,16 +1,20 @@
-import React from 'react';
-import AppBar from 'material-ui/AppBar';
-import CircularProgress from 'material-ui/CircularProgress';
-import Drawer from 'material-ui/Drawer';
-import IconButton from 'material-ui/IconButton';
-import IconDone from 'material-ui/svg-icons/action/done';
-import IconClose from 'material-ui/svg-icons/navigation/close';
-import MenuItem from 'material-ui/MenuItem';
+import React, { Fragment } from 'react';
 
-import serviceClientManager from './ServiceClientManager';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import Drawer from '@material-ui/core/Drawer';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import FolderIcon from '@material-ui/icons/Folder';
+import FolderOpenIcon from '@material-ui/icons/FolderOpen';
+import CloseIcon from '@material-ui/icons/Close';
+
+import TopBar from './TopBar';
+import ServiceClientManager from './ServiceClientManager';
 
 class Navigation extends React.Component {
-    constructor(props) {
+    constructor() {
         super();
 
         this.state = { listAlbum: null };
@@ -21,11 +25,7 @@ class Navigation extends React.Component {
     }
 
     componentDidMount() {
-        this.loadListAlbum();
-    }
-
-    loadListAlbum() {
-        serviceClientManager.retrieveListAlbum(this.loadListAlbumSuccess, this.loadListAlbumError);
+        ServiceClientManager.retrieveListAlbum(this.loadListAlbumSuccess, this.loadListAlbumError);
     }
 
     loadListAlbumSuccess(result) {
@@ -37,52 +37,63 @@ class Navigation extends React.Component {
     }
 
     handleSelectAlbum(albumId) {
-        if (this.props.activeAlbum !== albumId)
+        if (this.props.selectedAlbum !== albumId)
             this.props.onAlbumChange(albumId);
         this.props.onNavigationToggle();
     }
 
     createAlbumMenuItem(listAlbum) {
-        return listAlbum.map((album) => {
-            const selectedIcon = (this.props.activeAlbum === album.id) ? <IconDone /> : null;
-            return (
-                <MenuItem key={album.id} onTouchTap={() => this.handleSelectAlbum(album.id)} rightIcon={selectedIcon}>
-                    Album {album.id}
-                </MenuItem>
-            );
-        });
+        return (
+            <List>
+                {
+                    listAlbum.map((album) => {
+                        const isSelected = this.props.selectedAlbum === album.id;
+                        return (
+                            <ListItem
+                                button key={album.id}
+                                style={{ backgroundColor: isSelected ? 'lightgray' : '' }}
+                                onClick={() => this.handleSelectAlbum(album.id)}
+                            >
+                                <ListItemIcon>{isSelected ? <FolderOpenIcon /> : <FolderIcon />}</ListItemIcon>
+                                <ListItemText primary={'Album ' + album.id} />
+                            </ListItem>
+                        );
+                    })
+                }
+            </List>
+        );
     }
 
     render() {
-        const listAlbum = this.state.listAlbum;
         let navigationItems = null;
-
-        if (!listAlbum) {
+        if (this.state.listAlbum) {
+            navigationItems = this.createAlbumMenuItem(this.state.listAlbum);
+        } else {
             navigationItems = (
                 <div style={{ textAlign: 'center', marginTop: 20 }}>
                     <CircularProgress />
                 </div>
             );
-        } else {
-            navigationItems = (
-                <div>
-                    {this.createAlbumMenuItem(listAlbum)}
-                </div>
-            );
         }
 
         return (
-            <div>
+            <Fragment>
                 <Drawer
-                    docked={false}
-                    open={this.props.isNavigationOpen}>
-                    <AppBar
-                        title="Album List"
-                        iconElementLeft={<IconButton><IconClose /></IconButton>}
-                        onTouchTap={this.props.onNavigationToggle} />
-                    {navigationItems}
+                    open={this.props.isNavigationOpen}
+                    onClose={this.props.onNavigationToggle}
+                >
+                    <TopBar
+                        title={'Album List'}
+                        iconButton={<CloseIcon />}
+                        onIconButtonClick={this.props.onNavigationToggle} />
+                    <div
+                        style={{ width: '250px' }}
+                        role="presentation"
+                    >
+                        {navigationItems}
+                    </div>
                 </Drawer>
-            </div>
+            </Fragment>
         );
     }
 }

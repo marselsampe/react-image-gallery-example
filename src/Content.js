@@ -1,32 +1,27 @@
 import React from 'react';
-import CircularProgress from 'material-ui/CircularProgress';
+
+import CircularProgress from '@material-ui/core/CircularProgress';
+import Typography from '@material-ui/core/Typography';
 
 import Photo from './Photo';
-import serviceClientManager from './ServiceClientManager';
+import ServiceClientManager from './ServiceClientManager';
 
 class Content extends React.Component {
-    constructor(props) {
+    constructor() {
         super();
 
-        this.state = {
-            listPhoto: null
-        }
+        this.state = { listPhoto: null };
 
-        this.loadListPhoto = this.loadListPhoto.bind(this);
         this.loadListPhotoSuccess = this.loadListPhotoSuccess.bind(this);
         this.loadListPhotoError = this.loadListPhotoError.bind(this);
         this.createListPhotoGrid = this.createListPhotoGrid.bind(this);
     }
 
-    componentWillReceiveProps(nextProps) {
-        if (this.props.activeAlbum !== nextProps.activeAlbum) {
+    componentDidUpdate(prevProps) {
+        if (prevProps.selectedAlbum !== this.props.selectedAlbum) {
             this.setState({ listPhoto: null });
-            this.loadListPhoto(nextProps.activeAlbum);
+            ServiceClientManager.retrieveListPhoto(this.props.selectedAlbum, this.loadListPhotoSuccess, this.loadListPhotoError);
         }
-    }
-
-    loadListPhoto(albumId) {
-        serviceClientManager.retrieveListPhoto(albumId, this.loadListPhotoSuccess, this.loadListPhotoError);
     }
 
     loadListPhotoSuccess(result) {
@@ -44,19 +39,30 @@ class Content extends React.Component {
     }
 
     render() {
-        if (!this.props.activeAlbum) {
+        if (!this.props.selectedAlbum) {
             return (
-                <div style={{ textAlign: 'center', marginTop: 40 }}>
+                <Typography
+                    align="center"
+                    style={{ marginTop: 40, color: 'gray' }}
+                >
                     No album selected
-                </div>
+                </Typography>
             );
         } else {
             const listPhoto = this.state.listPhoto;
             if (!listPhoto) {
                 return (
                     <div style={{ textAlign: 'center' }}>
-                        <CircularProgress size={100} thickness={10} style={{ marginTop: 40 }} />
-                        <div style={{ marginTop: 20, fontStyle: 'italic' }}>Loading Album...</div>
+                        <CircularProgress
+                            size={100}
+                            thickness={10}
+                            style={{ marginTop: 40 }} />
+                        <Typography
+                            align="center"
+                            style={{ marginTop: 20, color: 'gray' }}
+                        >
+                            Loading Album...
+                        </Typography>
                     </div>
                 );
             } else {

@@ -1,6 +1,6 @@
-import React from 'react';
-import Header from './Header';
+import React, { Fragment } from 'react';
 
+import Header from './Header';
 import Content from './Content';
 
 class Main extends React.Component {
@@ -8,25 +8,25 @@ class Main extends React.Component {
         super();
 
         this.state = {
-            activeAlbum: null
+            selectedAlbum: null
         };
 
         this.handleAlbumChange = this.handleAlbumChange.bind(this);
     }
 
     handleAlbumChange(i) {
-        this.setState({ activeAlbum: i });
+        this.setState({ selectedAlbum: i });
     }
 
     render() {
         return (
-            <div>
+            <Fragment>
                 <Header
-                    activeAlbum={this.state.activeAlbum}
+                    selectedAlbum={this.state.selectedAlbum}
                     onAlbumChange={this.handleAlbumChange} />
                 <Content
-                    activeAlbum={this.state.activeAlbum} />
-            </div>
+                    selectedAlbum={this.state.selectedAlbum} />
+            </Fragment>
         );
     }
 }

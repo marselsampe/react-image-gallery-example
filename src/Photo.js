@@ -1,61 +1,80 @@
 import React from 'react';
-import CircularProgress from 'material-ui/CircularProgress';
-import { GridTile } from 'material-ui/GridList';
-import Paper from 'material-ui/Paper';
+
+import CircularProgress from '@material-ui/core/CircularProgress';
+import Typography from '@material-ui/core/Typography';
+import Card from '@material-ui/core/Card';
+import CardActionArea from '@material-ui/core/CardActionArea';
+import CardContent from '@material-ui/core/CardContent';
+import CardMedia from '@material-ui/core/CardMedia';
 
 class Photo extends React.Component {
-    _isMounted = false;
+    isComponentMounted = false;
+    downloadedImage = new Image();
 
-    constructor(props) {
+    constructor() {
         super();
 
         this.state = {
-            loadedImage: null
+            loadedImageSrc: null
         };
 
+        this.loadImage = this.loadImage.bind(this);
         this.loadImageSuccess = this.loadImageSuccess.bind(this);
     }
 
     componentDidMount() {
-        this._isMounted = true;
+        this.isComponentMounted = true;
         this.loadImage(this.props.photo.thumbnailUrl, this.loadImageSuccess);
     }
 
     componentWillUnmount() {
-        this._isMounted = false;
+        this.isComponentMounted = false;
+        this.downloadedImage.src = '';
     }
 
     loadImage(imageUrl, successCallback) {
-        var downloadingImage = new Image();
-        downloadingImage.onload = function () {
+        this.downloadedImage.onload = function () {
             successCallback(this.src);
         };
-        downloadingImage.src = imageUrl;
+        this.downloadedImage.src = imageUrl;
     }
 
-    loadImageSuccess(loadedImage) {
-        if (!this._isMounted)
+    loadImageSuccess(loadedImageSrc) {
+        if (!this.isComponentMounted)
             return;
-        this.setState({ loadedImage: loadedImage });
+        this.setState({ loadedImageSrc: loadedImageSrc });
     }
 
     render() {
         const photo = this.props.photo;
-        const loadedImage = this.state.loadedImage;
+        const loadedImageSrc = this.state.loadedImageSrc;
+        
         return (
-            <Paper
-                style={{ height: 260, width: 260, margin: 10, display: 'inline-block' }}
-                zDepth={2}
-                rounded={false}>
-                <GridTile
-                    key={photo.id}
-                    title={"Photo " + photo.id}
-                    subtitle={photo.title}
-                    titleStyle={{ textAlign: 'left' }}
-                    subtitleStyle={{ textAlign: 'left' }}>
-                    {(loadedImage ? <img src={loadedImage} /> : <CircularProgress style={{ margin: '35%' }} />)}
-                </GridTile>
-            </Paper>
+            <Card style={{ display: 'inline-block', minHeight: 260, width: 260, margin: 10, verticalAlign: 'top', textAlign: 'left' }}>
+                <CardActionArea>
+                    {(
+                        loadedImageSrc
+                            ? <CardMedia image={loadedImageSrc} title={photo.title} style={{ height: 150 }} />
+                            : <CircularProgress style={{ margin: '40%' }} />
+                    )}
+                    <CardContent>
+                        <Typography 
+                            gutterBottom 
+                            variant="h6" 
+                            component="h2"
+                        >
+                            {'Photo ' + photo.id}
+                        </Typography>
+                        <Typography 
+                            variant="body2" 
+                            color="textSecondary" 
+                            component="p"
+                        >
+                            {photo.title}
+                        </Typography>
+                    </CardContent>
+                </CardActionArea>
+            </Card>
         );
     }
 }

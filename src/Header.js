@@ -1,10 +1,12 @@
-import React from 'react';
-import AppBar from 'material-ui/AppBar';
+import React, { Fragment } from 'react';
 
+import MenuIcon from '@material-ui/icons/Menu';
+
+import TopBar from './TopBar';
 import Navigation from './Navigation';
 
 class Header extends React.Component {
-    constructor(props) {
+    constructor() {
         super();
 
         this.state = {
@@ -20,16 +22,17 @@ class Header extends React.Component {
 
     render() {
         return (
-            <div>
-                <AppBar
-                    title="My Album Gallery"
-                    onTouchTap={this.handleNavigationToggle} />
+            <Fragment>
+                <TopBar
+                    title={'My Album Gallery'}
+                    iconButton={<MenuIcon />}
+                    onIconButtonClick={this.handleNavigationToggle}/>
                 <Navigation
                     isNavigationOpen={this.state.isNavigationOpen}
                     onNavigationToggle={this.handleNavigationToggle}
-                    activeAlbum={this.props.activeAlbum}
+                    selectedAlbum={this.props.selectedAlbum}
                     onAlbumChange={this.props.onAlbumChange} />
-            </div>
+            </Fragment >
         );
     }
 }
